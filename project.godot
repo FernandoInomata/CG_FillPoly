@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="tentando trabalho1 cg"
-run/main_scene="res://node_2d.tscn"
+run/main_scene="uid://cgua2elp0w25e"
 config/features=PackedStringArray("4.4", "Forward Plus")
 
 [display]
