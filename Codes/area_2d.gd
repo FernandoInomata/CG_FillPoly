@@ -113,12 +113,12 @@ func _process(delta):
 	
 #Daqui para frente serão trabalhadas as funções que são passadas através de um sinal e outras funções
 #Que estão sendo chamadas anteriormente
-func mudar_cor(color):
-	cor = color	
-	for poly in polys:
-		poly["corAresta"] = cor
-	queue_redraw()
-
+func mudar_cor(color, numero):
+	# Verifica se o número do polígono selecionado é válido
+	if numero >= 0 and numero < polys.size():
+		polys[numero]["corAresta"] = color
+		queue_redraw()
+		
 func mudar_corFill(color):
 	corFill = color
 
@@ -129,7 +129,8 @@ func _on_mouse_exited() -> void:
 	AreaDesenho = false
 
 func _on_color_picker_color_changed(color: Color):
-	mudar_cor(color)
+	var numero = $"../OptionButton".get_selected()
+	mudar_cor(color, numero)
 	queue_redraw()
 
 func _on_color_picker_2_color_changed(color: Color):
