@@ -2,7 +2,9 @@
 Trabalho CG - Unioeste Cascavel PR
 
 Fernando Seiji Onoda Inomata 
+
 Gabriel Pereira
+
 Jonathan Tadei
 
 Trabalho feito utilizando a Engine Godot, utilizando Gdscript. O Código está disponível tanto no arquivo FillPoly.txt, quanto no arquivo area_2d.gd
