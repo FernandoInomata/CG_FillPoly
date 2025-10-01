@@ -10,9 +10,9 @@ config_version=5
 
 [application]
 
-config/name="tentando trabalho1 cg"
+config/name="CG_FillPoly"
 run/main_scene="uid://cgua2elp0w25e"
-config/features=PackedStringArray("4.4", "Forward Plus")
+config/features=PackedStringArray("4.5", "Forward Plus")
 
 [display]
 

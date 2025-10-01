@@ -3,19 +3,19 @@
 [ext_resource type="Script" uid="uid://c7hyk05pjllqk" path="res://Codes/area_2d.gd" id="1_hrq05"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_m066l"]
-size = Vector2(9.13, 5.02)
+size = Vector2(11.455, 4.7799997)
 
 [node name="Fillpoly" type="Node2D"]
-position = Vector2(5, 1)
+position = Vector2(919, 132)
 
 [node name="ColorPicker" type="ColorPicker" parent="."]
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = 1.0
-offset_top = 169.0
-offset_right = 265.0
-offset_bottom = 441.0
+offset_left = -599.0
+offset_top = 362.0
+offset_right = -335.0
+offset_bottom = 634.0
 grow_horizontal = 0
 scale = Vector2(0.5, 0.5)
 edit_alpha = false
@@ -28,10 +28,11 @@ hex_visible = false
 presets_visible = false
 metadata/_edit_use_anchors_ = true
 
-[node name="ColorPicker2" type="ColorPicker" parent="."]
-offset_left = 2.0
-offset_right = 266.0
-offset_bottom = 272.0
+[node name="ColorPicker3" type="ColorPicker" parent="."]
+offset_left = -867.0
+offset_top = 362.0
+offset_right = -569.0
+offset_bottom = 626.0
 scale = Vector2(0.5, 0.5)
 picker_shape = 1
 can_add_swatches = false
@@ -40,29 +41,28 @@ color_modes_visible = false
 sliders_visible = false
 hex_visible = false
 presets_visible = false
-metadata/_edit_use_anchors_ = true
-
-[node name="Label" type="Label" parent="."]
-offset_left = 2.0
-offset_top = 135.0
-offset_right = 137.0
-offset_bottom = 158.0
-text = "TROCAR COR FILL"
-metadata/_edit_use_anchors_ = true
 
 [node name="Label2" type="Label" parent="."]
-offset_left = 2.0
-offset_top = 301.0
-offset_right = 174.0
-offset_bottom = 324.0
-text = "TROCAR COR ARESTAS"
+offset_left = -583.185
+offset_top = 494.0
+offset_right = -411.185
+offset_bottom = 517.0
+text = "COR ARESTAS"
 metadata/_edit_use_anchors_ = true
 
+[node name="Label3" type="Label" parent="."]
+offset_left = -858.0
+offset_top = 489.0
+offset_right = -358.0
+offset_bottom = 512.0
+text = "COR VÉRTICES"
+
 [node name="Area2D" type="Area2D" parent="."]
+position = Vector2(4, 9)
 script = ExtResource("1_hrq05")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
-position = Vector2(695, 252)
+position = Vector2(-347.75, 102)
 scale = Vector2(100, 100)
 shape = SubResource("RectangleShape2D_m066l")
 
@@ -70,42 +70,49 @@ shape = SubResource("RectangleShape2D_m066l")
 show_behind_parent = true
 light_mask = 0
 z_index = -1
-offset_left = 238.0
-offset_right = 1152.0
-offset_bottom = 504.0
+offset_left = -916.0
+offset_top = -131.0
+offset_right = 232.0
+offset_bottom = 352.0
 mouse_filter = 2
+border_color = Color(0, 0, 0, 1)
 editor_only = false
 
 [node name="Button" type="Button" parent="."]
-offset_top = 338.0
-offset_right = 215.0
-offset_bottom = 393.0
+offset_left = -401.0
+offset_top = 368.0
+offset_right = -186.0
+offset_bottom = 423.0
 action_mode = 0
 text = "Criar Polígono"
 metadata/_edit_use_anchors_ = true
 
 [node name="OptionButton" type="OptionButton" parent="."]
-offset_left = 2.0
-offset_top = 406.0
-offset_right = 216.0
-offset_bottom = 426.0
+offset_left = -154.0
+offset_top = 372.0
+offset_right = 60.0
+offset_bottom = 392.0
+scale = Vector2(1.5, 1.5)
+metadata/_edit_use_anchors_ = true
 
 [node name="Fillpoly" type="Button" parent="."]
-offset_left = 3.0
-offset_top = 436.0
-offset_right = 216.0
-offset_bottom = 467.0
+offset_left = -400.0
+offset_top = 442.0
+offset_right = -185.0
+offset_bottom = 497.0
 text = "FillPoly"
+metadata/_edit_use_anchors_ = true
 
 [node name="RemoverPoly" type="Button" parent="."]
-offset_left = 4.0
-offset_top = 478.0
-offset_right = 216.0
-offset_bottom = 509.0
+offset_left = -146.0
+offset_top = 443.0
+offset_right = 69.0
+offset_bottom = 498.0
 text = "Remover Poligono"
+metadata/_edit_use_anchors_ = true
 
 [connection signal="color_changed" from="ColorPicker" to="Area2D" method="_on_color_picker_color_changed"]
-[connection signal="color_changed" from="ColorPicker2" to="Area2D" method="_on_color_picker_2_color_changed"]
+[connection signal="color_changed" from="ColorPicker3" to="Area2D" method="_on_color_picker_3_color_changed"]
 [connection signal="mouse_entered" from="Area2D" to="Area2D" method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="Area2D" to="Area2D" method="_on_mouse_exited"]
 [connection signal="pressed" from="Button" to="Area2D" method="_on_button_pressed"]

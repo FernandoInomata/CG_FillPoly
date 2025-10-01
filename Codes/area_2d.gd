@@ -3,6 +3,7 @@ var pontosClique = []
 var polys = []
 var cor : Color = Color.YELLOW
 var corFill : Color = Color.AQUA
+var corVertice : Color = Color.BLACK
 var AreaDesenho: bool
 var i = 0
 
@@ -20,7 +21,7 @@ func criarPolys():
 
 func criarPontos():
 	var mousePos = get_local_mouse_position()
-	pontosClique.append(mousePos)
+	pontosClique.append({"pos": mousePos, "color": corVertice})
 	queue_redraw()
 
 func FillPoly(poligono):
@@ -32,93 +33,119 @@ func FillPoly(poligono):
 		return
 
 	for point in points:
-		if Ymin == null or point.y < Ymin:
-			Ymin = point.y
-		if Ymax == null or point.y > Ymax:
-			Ymax = point.y
+		if Ymin == null or point.pos.y < Ymin:
+			Ymin = point.pos.y
+		if Ymax == null or point.pos.y > Ymax:
+			Ymax = point.pos.y
 	
 	if Ymin == null or Ymax == null:
-		return # Retorna se não houver pontos válidos
+		return
 		
 	Ymin = floori(Ymin)
 	Ymax = ceili(Ymax)
 	
 	var NsTotal = Ymax - Ymin
 	if NsTotal <= 0:
-		return # Não há altura para preencher
+		return
 
+	# O array de interseções agora armazena dicionários: {"x": float, "color": Color}
 	var intersec: Array[Array]
 	intersec.resize(NsTotal)
 
 	# Itera por todas as arestas do polígono
 	for i in range(len(points)):
 		var p1 = points[i]
-		var p2 = points[i-1] # GDScript lida com i-1 quando i=0, pegando o último elemento
-		# Essas 2 variáveis vão garantir que comece de cima para baixo
-		var startPoint = p1 if p1.y < p2.y else p2
-		var endPoint = p1 if p1.y >= p2.y else p2
+		var p2 = points[i-1]
+		
+		var startPoint = p1 if p1.pos.y < p2.pos.y else p2
+		var endPoint = p1 if p1.pos.y >= p2.pos.y else p2
 
-		var dx = endPoint.x - startPoint.x
-		var dy = endPoint.y - startPoint.y
+		var dx = endPoint.pos.x - startPoint.pos.x
+		var dy = endPoint.pos.y - startPoint.pos.y
+
 		if dy != 0:
+			# Variação de X por scanline (slope)
 			var tx = dx / dy
-			var x = startPoint.x
+			# Variação da COR por scanline
+			var dColor = endPoint.color - startPoint.color
+			var tColor = dColor / dy
+			
+			var x = startPoint.pos.x
+			var color = startPoint.color
 
-			for u in range(floori(startPoint.y), floori(endPoint.y)):
+			for u in range(floori(startPoint.pos.y), floori(endPoint.pos.y)):
 				var scanline_index = u - Ymin
 				
-				# Verificação de segurança para não acessar fora do array
 				if scanline_index >= 0 and scanline_index < NsTotal:
-					intersec[scanline_index].append(x)
+					# Adiciona a interseção com sua posição X e COR interpolada
+					intersec[scanline_index].append({"x": x, "color": color})
 				
-				x += tx # Calcula o X para a próxima scanline [cite: 125]
+				x += tx
+				color += tColor # Interpola a cor ao longo da aresta
 
-	var contadorLinha = 0
+	# Desenha as scanlines interpoladas
+	var valorY = Ymin
 	for scanline in intersec:
-		contadorLinha += 1
-		scanline.sort()
+		# Ordena as interseções pela coordenada X
+		scanline.sort_custom(func(a, b): return a.x < b.x)
 		
 		for j in range(0, len(scanline), 2):
 			if j + 1 < len(scanline):
-				var start_x = scanline[j]
-				var end_x = scanline[j+1]
+				var startIntersec = scanline[j]
+				var endIntersec = scanline[j+1]
 				
-				if start_x != end_x:
-					var line_start = Vector2(ceilf(start_x), contadorLinha + Ymin)
-					var line_end = Vector2(floorf(end_x), contadorLinha + Ymin)
-					draw_line(line_start, line_end, poligono["corDentro"])
-
+				var startX = startIntersec.x
+				var endX = endIntersec.x
+				var startColor = startIntersec.color
+				var endColor = endIntersec.color
+				
+				var span_width = endX - startX
+				if span_width <= 0:
+					continue
+				
+				# Desenha a linha horizontal pixel por pixel para interpolar a cor
+				for px in range(ceili(startX), floori(endX)):
+					# Calcula o fator de interpolação (t) de 0.0 a 1.0
+					var t = (px - startX) / span_width
+					# Interpola linearmente a cor (lerp)
+					var pixel_color = startColor.lerp(endColor, t)
+					# Desenha um retângulo de 1x1 pixel com a cor calculada
+					draw_rect(Rect2(px, valorY, 1, 1), pixel_color, false)
+		valorY += 1
+		
 #Função própria da Godot, para poder desenhar usando o Canvas
 func _draw():
+	@warning_ignore("shadowed_variable")
 	for i in range(len(pontosClique)-1):
-		draw_line(pontosClique[i], pontosClique[i + 1], cor, 3.5)
+		draw_line(pontosClique[i].pos, pontosClique[i+1].pos, cor, 3.5)
 	if len(pontosClique) > 1:
-		draw_line(pontosClique[-1], pontosClique[0], cor, 3.5)
+		draw_line(pontosClique[-1].pos, pontosClique[0].pos, cor, 3.5)
 	for point in pontosClique:
-		draw_circle(point, 5, Color.BLACK)
+		draw_circle(point.pos, 5, point.color) 
 	for polig in polys:
 		var points = polig["pontos"]
 		var corar = polig["corAresta"]
-		var corDentro = polig["corDentro"]
-		FillPoly(polig)
+		FillPoly(polig) 
+		@warning_ignore("shadowed_variable")
 		for i in range(len(points)-1):
-			draw_line(points[i], points[i + 1], corar, 3.5)
+			draw_line(points[i].pos, points[i+1].pos, corar, 3.5)
 		if len(points) > 1:
-			draw_line(points[-1], points[0], corar, 3.5)
+			draw_line(points[-1].pos, points[0].pos, corar, 3.5)
 		for point in points:
-			draw_circle(point, 5, Color.BLACK)
+			draw_circle(point.pos, 5, point.color)
 
+@warning_ignore("unused_parameter")
 func _process(delta):
 	pass
 	
 #Daqui para frente serão trabalhadas as funções que são passadas através de um sinal e outras funções
 #Que estão sendo chamadas anteriormente
-func mudar_cor(color):
-	cor = color	
-	for poly in polys:
-		poly["corAresta"] = cor
-	queue_redraw()
-
+func mudar_cor(color, numero):
+	# Verifica se o número do polígono selecionado é válido
+	if numero >= 0 and numero < polys.size():
+		polys[numero]["corAresta"] = color
+		queue_redraw()
+		
 func mudar_corFill(color):
 	corFill = color
 
@@ -129,7 +156,8 @@ func _on_mouse_exited() -> void:
 	AreaDesenho = false
 
 func _on_color_picker_color_changed(color: Color):
-	mudar_cor(color)
+	var numero = $"../OptionButton".get_selected()
+	mudar_cor(color, numero)
 	queue_redraw()
 
 func _on_color_picker_2_color_changed(color: Color):
@@ -156,3 +184,12 @@ func _on_remover_poly_pressed() -> void:
 		$"../OptionButton".remove_item(numero)
 		polys.remove_at(numero)
 	queue_redraw()
+
+func _on_color_picker_3_color_changed(color: Color) -> void:
+	mudar_corVertice(color)
+	queue_redraw()
+	pass # Replace with function body.
+	
+func mudar_corVertice(color):
+	corVertice = color
+	pass
