@@ -99,18 +99,18 @@ func FillPoly(poligono):
 				var startColor = startIntersec.color
 				var endColor = endIntersec.color
 				
-				var span_width = endX - startX
-				if span_width <= 0:
+				var verific = endX - startX
+				if verific <= 0:
 					continue
 				
 				# Desenha a linha horizontal pixel por pixel para interpolar a cor
-				for px in range(ceili(startX), floori(endX)):
+				for coordX in range(ceili(startX), floori(endX)):
 					# Calcula o fator de interpolação (t) de 0.0 a 1.0
-					var t = (px - startX) / span_width
+					var t = (coordX - startX) / verific
 					# Interpola linearmente a cor (lerp)
-					var pixel_color = startColor.lerp(endColor, t)
+					var pixelColor = startColor.lerp(endColor, t)
 					# Desenha um retângulo de 1x1 pixel com a cor calculada
-					draw_rect(Rect2(px, valorY, 1, 1), pixel_color, false)
+					draw_rect(Rect2(coordX, valorY, 1, 1), pixelColor, false)
 		valorY += 1
 		
 #Função própria da Godot, para poder desenhar usando o Canvas
